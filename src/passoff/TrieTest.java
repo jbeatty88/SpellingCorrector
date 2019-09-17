@@ -193,6 +193,7 @@ public class TrieTest {
         add("baboon");
         add("car");
         add("car");
+        System.out.println(studentTrie.toString());
         assertFalse(studentTrie.toString().equalsIgnoreCase(wrongTrieString) || studentTrie.toString().equalsIgnoreCase(wrongTrieString+"\n"),
                 "Trie toString() method has wrong count for (\"car\")");
         assertTrue(studentTrie.toString().equalsIgnoreCase(trieString) || studentTrie.toString().equalsIgnoreCase(trieString+"\n"),

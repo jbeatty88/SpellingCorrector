@@ -39,4 +39,5 @@ class TrieNodeTest {
         n.addNode(5);
         assertEquals(n.getAlphabet()[5].getValue(), 0 );
     }
+
 }

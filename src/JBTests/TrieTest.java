@@ -140,4 +140,24 @@ class TrieTest {
         trie.add("Hello");
         assertEquals(5, trie.getNodeCount());
     }
+
+    @Test
+    void getNodeAndWordCountConsecAddingWords() {
+        trie.add("kick");trie.add("kicks");
+        assertEquals(2, trie.getWordCount());assertEquals(6, trie.getNodeCount());
+        trie.add("kicker");
+        assertEquals(3, trie.getWordCount());assertEquals(8, trie.getNodeCount());
+        trie.add("apple");
+        assertEquals(4, trie.getWordCount());assertEquals(13, trie.getNodeCount());
+        trie.add("ape");
+        assertEquals(5, trie.getWordCount());assertEquals(14 ,trie.getNodeCount());
+        trie.add("brick");
+        assertEquals(6, trie.getWordCount());assertEquals(19, trie.getNodeCount());
+    }
+
+    @Test
+    void toStringTest() {
+        trie.add("apple"); trie.add("baby"); trie.add("dog"); trie.add("cat"); trie.add("bully");
+        System.out.println(trie.toString());
+    }
 }

@@ -1,5 +1,8 @@
 package spell;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class TrieNode implements INode{
     TrieNode[] alphaNodes = new TrieNode[26];
     int frequency = 0;
@@ -20,4 +23,22 @@ public class TrieNode implements INode{
     public void incrementFrequency() { this.frequency++; }
 
     public boolean hasNodeAt(int idx) { return this.alphaNodes[idx] != null; }
+
+    public char getChar(int idx) { return (char) (idx + 'a'); }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TrieNode trieNode = (TrieNode) o;
+        return frequency == trieNode.frequency &&
+                Arrays.equals(alphaNodes, trieNode.alphaNodes);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(frequency);
+        result = 31 * result + Arrays.hashCode(alphaNodes);
+        return result;
+    }
 }
