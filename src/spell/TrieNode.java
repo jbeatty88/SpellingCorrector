@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public class TrieNode implements INode{
-    TrieNode[] alphaNodes = new TrieNode[26];
-    int frequency = 0;
+    public TrieNode[] alphaNodes = new TrieNode[26];
+    public int frequency = 0;
 
     public TrieNode() { }
 
@@ -28,6 +28,7 @@ public class TrieNode implements INode{
 
     @Override
     public boolean equals(Object o) {
+        // Compare the nodes all the way down to the frequency
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TrieNode trieNode = (TrieNode) o;
@@ -37,6 +38,7 @@ public class TrieNode implements INode{
 
     @Override
     public int hashCode() {
+        // INTELLIJ generated this. Assuming it is efficient
         int result = Objects.hash(frequency);
         result = 31 * result + Arrays.hashCode(alphaNodes);
         return result;

@@ -10,6 +10,8 @@ public class SpellCorrector implements ISpellCorrector {
     char[] alphabet = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
             'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
 
+    public SpellCorrector() { }
+
     @Override
     public void useDictionary(String dictionaryFileName) throws IOException {
         try(Scanner sc = new Scanner(new FileReader(dictionaryFileName))) { while(sc.hasNext()) trie.add(sc.next()); }
@@ -77,32 +79,45 @@ public class SpellCorrector implements ISpellCorrector {
         ArrayList<String> deletionWords = new ArrayList<>();
         Set<String> generateStrings = new TreeSet<>();
         String frontSubStr, backSubStr, frontBack;
+        // Go through each letter of the word
         for(int i = 0; i < word.length(); i++) {
+            // get all deletions starting from front (Very inefficient)
             frontSubStr = word.substring(0, i);
             backSubStr = "";
+            // If we aren't going to step out of the word, keep track of back subString
             if(i + 1 < word.length()) backSubStr = word.substring(i + 1);
+            // Also, combine front and back substrings
             frontBack = frontSubStr + backSubStr;
+            // Add everything generated to a set (no dups and sorted)
             generateStrings.add(frontSubStr); generateStrings.add(backSubStr); generateStrings.add(frontBack);
         }
+        // Only keep the words of the expected size len(word) - 1
         for(String s : generateStrings) if(s.length() == word.length() - 1) deletionWords.add(s);
-
+        // return that whole array of deletion words
         return deletionWords;
     }
 
     public ArrayList<String> transpositionDistance(String word) {
         ArrayList<String> transpositionWords = new ArrayList<>();
+        // Convert word to char array for easier char manipulation
         char[] wordCharArray = word.toCharArray();
+        // Keep track of the two letters we'll be swapping
         char curLetter, nextLetter;
+        // From each position in the word
         for(int i = 0; i < wordCharArray.length; i++) {
             StringBuilder sb = new StringBuilder();
             curLetter = wordCharArray[i];
+            // Swap the current letter with the next letter
             if(i + 1 < wordCharArray.length) {
                 nextLetter = wordCharArray[i + 1];
                 wordCharArray[i] = nextLetter;
                 wordCharArray[i+1] = curLetter;
+                // Convert the resulting char array back to a string
                 for(char c : wordCharArray) sb.append(c);
+                // Add it to our transposition collection
                 transpositionWords.add(sb.toString());
             }
+            // Start over from the original word each time
             wordCharArray = word.toCharArray();
         }
         return transpositionWords;
@@ -111,13 +126,17 @@ public class SpellCorrector implements ISpellCorrector {
     public ArrayList<String> alterationDistance(String word) {
         char[] wordCharArray = word.toCharArray();
         ArrayList<String> alterationWords = new ArrayList<>();
+        // Go to each letter position in the word
         for(int i = 0; i < word.length(); i++) {
+            // Replace the letter at that position with every letter in the alphabet
             for(char c : alphabet) {
                 StringBuilder sb = new StringBuilder();
                 wordCharArray[i] = c;
+                // Convert our char array back to a string
                 for(char ch : wordCharArray) sb.append(ch);
                 alterationWords.add(sb.toString());
             }
+            // Start from original word again
             wordCharArray = word.toCharArray();
         }
         return alterationWords;
@@ -126,6 +145,7 @@ public class SpellCorrector implements ISpellCorrector {
     public ArrayList<String> insertionDistance(String word) {
         ArrayList<String> insertionWords = new ArrayList<>();
 
+        // Place every letter of the alphabet before, inbetween, and after every letter
         for(int i = 0; i < word.length() + 1; i++) {
             for(char letter : alphabet) {
                 StringBuilder sb = new StringBuilder(word);
@@ -137,12 +157,13 @@ public class SpellCorrector implements ISpellCorrector {
     }
 
     public Set<String> suggestedWords(String word) {
+        // Generate all of the editDistance collections
         ArrayList<String> deletionWords = deletionDistance(word);
         ArrayList<String> insertionWords = insertionDistance(word);
         ArrayList<String> alterationWords = alterationDistance(word);
         ArrayList<String> transpositionWords = transpositionDistance(word);
         Set<String> suggestedWordSet = new TreeSet<>();
-
+        // Combine each one into a set to eliminate duplicates and easily sort
         suggestedWordSet.addAll(deletionWords);
         suggestedWordSet.addAll(insertionWords);
         suggestedWordSet.addAll(alterationWords);
