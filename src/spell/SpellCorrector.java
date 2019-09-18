@@ -2,33 +2,74 @@ package spell;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SpellCorrector implements ISpellCorrector {
     public Trie trie = new Trie();
-    char[] alphabet = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+    char[] alphabet = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+            'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+
     @Override
     public void useDictionary(String dictionaryFileName) throws IOException {
-        try(Scanner sc = new Scanner(new FileReader(dictionaryFileName))) {
-            while(sc.hasNext()) trie.add(sc.next());
-        }
+        try(Scanner sc = new Scanner(new FileReader(dictionaryFileName))) { while(sc.hasNext()) trie.add(sc.next()); }
     }
 
     @Override
     public String suggestSimilarWord(String inputWord) {
-        Set<String> matches = new TreeSet<>();
+        TreeSet<String> matches = new TreeSet<>();
+        // only use lowercase
         String word = inputWord.toLowerCase();
-        if(trie.find(word) != null) return word;
-        else {
-            for(String s : suggestedWords(word)) {
-                if(trie.find(s) != null) matches.add(s);
-            }
-            System.out.println(matches.size());
+        // If we the word is found in the Trie and also has a frequency (is an accepted word) then we found it
+        if(trie.find(word) != null) {
+            if(trie.find(word).getValue() > 0) return word;
         }
-        return " ";
+        // If we did't find the word, we need to get the words of editDistance 1
+        else {
+            // Travers through every word generated to be edit Distance 1
+            for(String s : suggestedWords(word)) {
+                // If any of the editDistance 1 words are in the trie, add it to the matches set (no duplicates, sorted)
+                if(trie.find(s) != null) {
+                    if(trie.find(s).getValue() > 0) matches.add(s);
+                }
+            }
+        }
+        // If there were no matches of editDistance 1
+        if(matches.size() == 0) {
+            // get editDistance 2
+            TreeSet<String> editDist2 = new TreeSet<>();
+            for(String s : suggestedWords(word)) editDist2.addAll(suggestedWords(s));
+            for(String str : editDist2) {
+                if(trie.find(str) != null) {
+                    if(trie.find(str).getValue() > 0) matches.add(str);
+                }
+            }
+        }
+        // conditionally choose the best word from those words that are in the Trie
+        return getSuggestedWord(matches);
+    }
+
+    public String getSuggestedWord(TreeSet<String> suggestedWordSet) {
+        Map<String, Integer> wordNodeMap = new HashMap<>();
+        if(suggestedWordSet.size() == 1) return suggestedWordSet.first();
+        else if(suggestedWordSet.size() > 1) {
+            // Map the words to their frequencies
+            for(String s : suggestedWordSet) wordNodeMap.put(s, trie.find(s).getValue());
+            // Find the maximum frequency in the set of words
+            int max = Collections.max(wordNodeMap.values());
+            // Set to store the word with highest frequency and alphabetize if there are more than one words with same frequency
+            TreeSet<String> maxFreqWord = new TreeSet<>();
+            // Traverse through each map entry
+            for(Map.Entry<String, Integer> entry : wordNodeMap.entrySet()) {
+                if(entry.getValue() == max) maxFreqWord.add(entry.getKey());
+            }
+            // Return either the highest freq word, or alphabetized word if more than one word
+            return maxFreqWord.first();
+        }
+        else {
+            // return null if there is no word
+            return null;
+        }
     }
 
     public ArrayList<String> deletionDistance(String word) {
