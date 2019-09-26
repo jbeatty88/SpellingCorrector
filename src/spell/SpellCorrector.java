@@ -82,10 +82,11 @@ public class SpellCorrector implements ISpellCorrector {
         // Go through each letter of the word
         for(int i = 0; i < word.length(); i++) {
             // get all deletions starting from front (Very inefficient)
+            // word = word.substring(0, i) + (word.substring(i + 1, leng)
             frontSubStr = word.substring(0, i);
-            backSubStr = "";
+            backSubStr = word.substring(i + 1, word.length());
             // If we aren't going to step out of the word, keep track of back subString
-            if(i + 1 < word.length()) backSubStr = word.substring(i + 1);
+//            if(i + 1 < word.length()) backSubStr = word.substring(i + 1);
             // Also, combine front and back substrings
             frontBack = frontSubStr + backSubStr;
             // Add everything generated to a set (no dups and sorted)

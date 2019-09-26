@@ -1,14 +1,10 @@
 package spell;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public class Trie implements ITrie {
     public TrieNode rootNode = new TrieNode();
     public int wordCount = 0, nodeCount = 1, aggregateWordFrequency = 0;
-    public Set<String> addedWords = new TreeSet<>();
 
     /*
     * int idx = letter - a
@@ -42,7 +38,6 @@ public class Trie implements ITrie {
         // If this is a new word, increment the word count
         if(curNode.getValue() == 1) this.wordCount++;
         // Keep track of added words for debugging purposes as well as comparing Tries
-        this.addedWords.add(word);
     }
 
     @Override
@@ -122,11 +117,6 @@ public class Trie implements ITrie {
 
     @Override
     public int hashCode() {
-        // This isn't recursive, but I don't know exactly how you would make this recursive.
-        // wordCount, nodeCount, and even toString aren't necessarily unique to any one Trie
-        // What could be more unique is specific frequencies at every node which we do check
-        // in the equals for nodes that we use in our Trie equals. Equals should never show two Tries
-        // as the same since we compare each node down to the frequency.
-        return Objects.hash(this.wordCount, this.nodeCount, this.toString());
+        return Objects.hash(this.wordCount, this.nodeCount, this.rootNode.hashCode(), Arrays.hashCode(this.rootNode.alphaNodes));
     }
 }
